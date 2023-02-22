@@ -1,0 +1,581 @@
+package com.js;
+
+public class InvalidChoiceException extends RuntimeException{
+	
+private String message;
+	
+	public  InvalidChoiceException(String message)
+	{
+		this.message=message;
+	}
+	
+	
+	@Override
+	public String getMessage()
+	{
+		return message;
+	}
+
+}
+
+///////////////////////////////////
+
+package com.js;
+
+public class ProductNotFoundException extends RuntimeException{
+	
+private String message;
+	
+	public  ProductNotFoundException (String message)
+	{
+		this.message=message;
+	}
+	
+	
+	@Override
+	public String getMessage()
+	{
+		return message;
+	} 
+}
+
+
+//////////////////////////
+
+package com.jspiders;
+
+public interface DepartmentalStore {
+	
+   void	addProduct(); // public abstract void product();
+   void removeProduct();
+   void removeAllProduct();
+   void displayProduct();
+   void displayAllProduct();
+   void updateProduct();
+   void countProduct();
+   void sortProductProduct();
+	
+
+}
+
+/////////////////////////
+
+package com.jspiders;
+
+import java.util.ArrayList;
+import java.util.Collections;
+import java.util.LinkedHashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.Scanner;
+import java.util.Set;
+
+import com.js.InvalidChoiceException;
+import com.js.ProductNotFoundException;
+
+import sortinglogic.SortProductByCost;
+import sortinglogic.SortProductByName;
+import sortinglogic.SortProductByQuantity;
+import sortinglogic.SortProductbyId;
+
+//abstract 
+public class DepartmentalStoreImpl  implements DepartmentalStore{
+
+	Scanner sc=new Scanner(System.in);
+	Map<String,Product> db = new LinkedHashMap<String,Product>();
+	
+	@Override
+	public void addProduct() {
+		// Accept name,cost,quantity
+		// create an instance of product
+		// ADD into db-> put()-> entry
+		
+		System.out.println("Enter product name");
+		String name=sc.next();
+		System.out.println("enter product cost");
+		int cost=sc.nextInt();
+		System.out.println("enter product quantity");
+		int quantity = sc.nextInt();
+		
+		Product p=new Product(name,cost,quantity);
+		db.put(p.getId(), p);
+		
+		System.out.println("product  inserted sucessfully");
+		
+	}
+
+	@Override
+	public void removeAllProduct() {
+		
+				
+		
+	}
+
+	@Override
+	public void displayProduct() {
+		
+		// Accept product id
+		System.out.println("enter product id:");
+		String id=sc.next().toUpperCase();
+		
+		if(db.containsKey(id))
+		{
+			Product p= db.get(id); // Product p=new Product();
+			System.out.println(p); // toString() is Override
+		}
+		else
+		{
+			try {
+				throw new  ProductNotFoundException("product not present");
+			}
+			catch(Exception e)
+			{
+				System.out.println(e.getMessage());
+			}
+		}
+		// check if ID is present or not -> containsKey()
+		// Invoke an exception -> productNotFoundException
+		
+	}
+
+	@Override
+	public void displayAllProduct() {
+		
+		System.out.println("product list");
+		System.out.println("==========");
+		Set<String> keys=db.keySet();
+		for(String id:keys)
+		{
+		 Product p=db.get(id);
+		 System.out.println(p);
+		}
+		
+		
+	}
+
+	@Override
+	public void updateProduct() {
+	 
+		System.out.println("enter product id:");
+		String id=sc.next().toUpperCase();
+		
+		if(db.containsKey(id))
+		{
+			Product product= db.get(id);
+			
+			System.out.println("1.update name\n2.update cost\n3.update quantity");
+			System.out.println("enter choice:");
+			int choice=sc.nextInt();
+			
+			switch(choice)
+			{
+			case 1:
+				System.out.println("enter product name");
+				int name=sc.nextInt();
+				product.setCost(name); // product.setCost(sc.nextInt());
+				System.out.println("product name updated sucessfully");
+				break;
+				
+				
+			case 2:
+				System.out.println("enter product cost");
+				int cost=sc.nextInt();
+				product.setCost(cost); // product.setCost(sc.nextInt());
+				System.out.println("product cost updated sucessfully");
+				break;
+				
+			case 3:
+				System.out.println("enter product quantity");
+				int quantity=sc.nextInt();
+				product.setCost(quantity); // product.setCost(sc.nextInt());
+				System.out.println("product quantity updated sucessfully");
+				break;
+				
+			   default:
+				   try {
+					   throw new InvalidChoiceException("Invalid choice");
+				   }
+				   catch(Exception e){
+					   System.out.println(e.getMessage());
+					   
+				   }
+			}
+		}
+		
+	}
+
+	@Override
+	public void countProduct() {
+		
+		
+		
+	}
+
+	@Override
+	public void sortProductProduct() {
+		
+		Set<String> keys=db.keySet();
+		List<Product> list=new ArrayList<Product>();
+		for(String key :keys)
+		{
+			list.add(db.get(key));   // Adding Product objects from Map to list
+		}
+		System.out.println("1.SortProductbyId\n2.SortProductByName\n3.SortProductByCost\n4.SortProductByQuantity ");
+		System.out.println("enter choice");
+		int choice=sc.nextInt();
+		
+		// 1 asc 2 des
+		
+		System.out.println("1.ascending order\n2.descending order");
+		System.out.println("enter choice");
+		int input =sc.nextInt();
+		
+		switch(choice)
+		{
+		case 1: // if and else if
+			
+			Collections.sort(list,new SortProductbyId());
+			if(input==2)
+			{
+				Collections.reverse(list);
+			}
+			display(list);
+			break;
+		     
+		case 2:   // if and else if
+			Collections.sort(list,new SortProductByName());
+			if(input==2)
+			{
+				Collections.reverse(list);
+			}
+			display(list);
+			break;
+		   
+		case 3:   // if and else if
+			Collections.sort(list,new SortProductByCost ());
+			if(input==2)
+			{
+				Collections.reverse(list);
+			}
+			display(list);
+			break;
+			
+		case 4:   // if and else if
+			Collections.sort(list,new SortProductByQuantity ());
+			if(input==2)
+			{
+				Collections.reverse(list);
+			}
+			display(list);
+			break;
+			
+		   default:
+			   try {
+				   throw new InvalidChoiceException("Invalid choice");
+			   }
+			   catch(Exception e){
+				   System.out.println(e.getMessage());
+				   
+			   }
+		}
+	}
+
+	private void display(List<Product> list) {
+		
+	
+		for(Product p:list)
+		{
+			System.out.println(p);
+		}
+	}
+
+	@Override
+	public void removeProduct() {
+		// Accept product id
+				System.out.println("enter product id:");
+				String id=sc.next().toUpperCase();
+				
+				if(db.containsKey(id))
+				{
+					db.remove(id);
+					System.out.println("product removed successfully");
+				}
+				else
+				{
+					try {
+						throw new  ProductNotFoundException("product not present");
+					}
+					catch(Exception e)
+					{
+						System.out.println(e.getMessage());
+					}
+				}
+				// check if ID is present or not -> containsKey()
+				// Invoke an exception -> productNotFoundException
+				
+		
+	}
+	
+	
+
+}
+
+////////////////////////////////////////////
+
+
+package com.jspiders;
+
+public class Product {
+	
+	
+	// private -> id(Auto-Generated), name,cost,quantity
+	// public constructor
+	// 4 public getter methods & 3 public setter methods
+	// to String()
+	
+	private String id;
+	private String name;
+	private int cost;
+	private int quantity;
+	
+	private static int count=101;
+
+	public Product(String name, int cost, int quantity) {
+		
+		this.id = "JSP"+count;
+		this.name = name;
+		this.cost = cost;
+		this.quantity = quantity;
+		count++;
+		
+		
+	}
+
+	public String getId() {
+		return id;
+	}
+
+	public void setId(String id) {
+		this.id = id;
+	}
+
+	public String getName() {
+		return name;
+	}
+
+	public void setName(String name) {
+		this.name = name;
+	}
+
+	public int getCost() {
+		return cost;
+	}
+
+	public void setCost(int cost) {
+		this.cost = cost;
+	}
+
+	public int getQuantity() {
+		return quantity;
+	}
+
+	public void setQuantity(int quantity) {
+		this.quantity = quantity;
+	}
+
+	public static int getCount() {
+		return count;
+	}
+
+	public static void setCount(int count) {
+		Product.count = count;
+	}
+
+	@Override
+	public String toString() {
+		return "Product [id=" + id + ", name=" + name + ", cost=" + cost + ", quantity=" + quantity + "]";
+	}
+
+	
+	
+
+	
+	
+
+	
+
+
+
+	
+
+
+
+	
+	
+	
+
+}
+
+//////////////////////////////
+
+package com.jspiders;
+
+import java.util.Scanner;
+
+import com.js.InvalidChoiceException;
+
+public class Solution {
+	
+	
+	private static void displayMenu()
+	{
+		
+	
+		System.out.println("1.Add product\n2.remove product\n3.removeAllProduct\n4.Display Product\n5.Display All Product\n6.updateProduct\n7.countProduct\n8.sortProductProduct");
+		
+		}
+public static void main(String[] args) {
+	
+	Scanner sc=new Scanner(System.in);
+	DepartmentalStore  store= new DepartmentalStoreImpl();
+	
+	while(true)
+	{
+	// Menu- Driven program -> 9 options
+	System.out.println("Welcome to Departmental Store");
+	System.out.println("===================");
+	
+	
+	displayMenu();
+	
+	
+	System.out.println("Enter choice");
+	int choice= sc.nextInt();
+	switch(choice)
+	{
+	case 1:
+		store.addProduct();
+		break;
+		
+	case 2:
+		store.removeProduct();
+		break;
+		
+	case 3:
+		store.removeAllProduct();
+		break;
+		
+	
+		
+	case 4:
+		store.displayProduct();
+		break;
+	
+	case 5:
+		store.displayAllProduct();
+		break;
+		
+	case 6:
+		store.updateProduct();
+		break;
+		
+	case 7:
+		store.countProduct();
+		break;
+		
+	case 8:
+		store.sortProductProduct();
+		break;
+		
+	case 9:
+		System.out.println("thank you");
+		System.exit(0);
+		
+	   default:
+		   try {
+			   throw new InvalidChoiceException("Invalid choice");
+		   }
+		   catch(Exception e){
+			   System.out.println(e.getMessage());
+			   
+		   }
+	}
+	// switch
+	// com.customexception -> InvalidChoiceException
+	
+	
+}
+}
+}
+
+//////////////////////////////////////////////
+
+package sortinglogic;
+import java.util.Comparator;
+import com.jspiders.Product;
+
+public class SortProductByCost  implements Comparator<Product>{
+
+	@Override
+	public int compare(Product x,Product y) {
+		
+		return x.getCost()-y.getCost();
+	}
+	
+
+}
+
+////////////////////////////////////
+
+package sortinglogic;
+
+import java.util.Comparator;
+
+import com.jspiders.Product;
+
+public class SortProductbyId implements Comparator<Product>{
+	
+	@Override
+	public int compare(Product x,Product y) {
+		
+		return x.getId().compareTo(y.getId());
+	}
+	
+
+}
+
+////////////////////////////
+
+package sortinglogic;
+
+import java.util.Comparator;
+
+import com.jspiders.Product;
+
+public class SortProductByName   implements Comparator<Product>{
+	
+	@Override
+	public int compare(Product x,Product y) {
+		
+		return x.getName().compareTo(y.getName());
+	}
+
+}
+
+/////////////////////////
+
+package sortinglogic;
+
+import java.util.Comparator;
+
+import com.jspiders.Product;
+
+public class SortProductByQuantity implements Comparator<Product>{
+
+	@Override
+	public int compare(Product x,Product y) {
+		
+		return x.getQuantity()-y.getQuantity();
+	}
+	
+}
